@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Free Icon Finder</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      background: #07080f;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      color: #e2e8f0;
+      padding: 28px 16px;
+    }
+    .header { text-align: center; margin-bottom: 32px; }
+    .site-badges-row { display: flex; justify-content: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+    .site-badge-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    h1 { font-size: 22px; font-weight: 800; color: #f1f5f9; margin: 0 0 6px; }
+    .subtitle { color: #475569; font-size: 13px; margin: 0 0 14px; }
+    .free-badges { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+    .free-badge { font-size: 11px; padding: 4px 12px; border-radius: 20px; font-weight: 700; }
+    .input-section { max-width: 660px; margin: 0 auto 24px; }
+    label.section-label { font-size: 11px; color: #64748b; font-weight: 700; letter-spacing: 1.2px; display: block; margin-bottom: 8px; text-transform: uppercase; }
+    textarea { width: 100%; padding: 14px 16px; border-radius: 12px; border: 1.5px solid #1a2035; background: #0d1117; color: #e2e8f0; font-size: 15px; outline: none; resize: vertical; line-height: 1.65; font-family: 'Segoe UI', Tahoma, sans-serif; transition: border 0.2s; }
+    textarea:focus { border-color: #00b3ff; }
+    #generateBtn { width: 100%; margin-top: 10px; padding: 14px; border-radius: 12px; border: none; background: linear-gradient(135deg, #00b3ff, #a78bfa); color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; letter-spacing: 0.5px; transition: all 0.2s; }
+    #generateBtn:disabled { background: #1a2035; color: #334155; cursor: not-allowed; }
+    #errorMsg { color: #f87171; font-size: 13px; margin-top: 8px; text-align: center; display: none; }
+    #results { max-width: 660px; margin: 0 auto 28px; display: none; }
+    .ai-reason { background: #0d1117; border: 1px solid #1a2035; border-radius: 12px; padding: 12px 16px; margin-bottom: 14px; font-size: 13px; color: #94a3b8; line-height: 1.6; }
+    .ai-reason strong { color: #e2e8f0; }
+    .site-card { background: #0d1117; border-radius: 14px; padding: 16px 18px; margin-bottom: 10px; }
+    .site-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+    .site-name { font-weight: 800; font-size: 15px; }
+    .site-free-tag { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 700; margin-left: auto; }
+    .kw-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .kw-box { flex: 1; background: #151c2c; padding: 10px 14px; border-radius: 8px; font-size: 16px; font-weight: 700; font-family: monospace; letter-spacing: 0.5px; color: #f1f5f9; min-width: 120px; }
+    .copy-btn, .search-btn { padding: 10px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.15s; text-decoration: none; display: inline-block; }
+    .copy-btn { background: #151c2c; border: 1px solid #1e293b; color: #94a3b8; }
+    .copy-btn.copied { background: #22c55e22; border-color: #22c55e; color: #22c55e; }
+    #historySection { max-width: 660px; margin: 0 auto; display: none; }
+    .history-label { font-size: 11px; color: #334155; font-weight: 700; letter-spacing: 1.2px; margin-bottom: 10px; text-transform: uppercase; }
+    .history-item { background: #0d1117; border: 1px solid #1a2035; border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; cursor: pointer; transition: border 0.15s; }
+    .history-item:hover { border-color: #334155; }
+    .history-line { font-size: 13px; color: #64748b; line-height: 1.5; margin-bottom: 8px; }
+    .history-kws { display: flex; gap: 6px; flex-wrap: wrap; }
+    .history-kw { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-family: monospace; font-weight: 700; }
+    .footer { text-align: center; margin-top: 36px; color: #1a2035; font-size: 11px; }
+    .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #ffffff44; border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="site-badges-row">
+      <div class="site-badge-icon" style="background:#00b3ff22;border:1.5px solid #00b3ff44;">⭐</div>
+      <div class="site-badge-icon" style="background:#22c55e22;border:1.5px solid #22c55e44;">🎨</div>
+      <div class="site-badge-icon" style="background:#a78bfa22;border:1.5px solid #a78bfa44;">🖼️</div>
+    </div>
+    <h1>Free Icon Finder</h1>
+    <p class="subtitle">Script line daalo → 3 free websites ke liye keywords milenge</p>
+    <div class="free-badges">
+      <span class="free-badge" style="background:#00b3ff22;border:1px solid #00b3ff44;color:#00b3ff;">⭐ Flaticon — Free with attribution</span>
+      <span class="free-badge" style="background:#22c55e22;border:1px solid #22c55e44;color:#22c55e;">🎨 Icons8 — Free with attribution</span>
+      <span class="free-badge" style="background:#a78bfa22;border:1px solid #a78bfa44;color:#a78bfa;">🖼️ Undraw — 100% Free ✅</span>
+    </div>
+  </div>
+  <div class="input-section">
+    <label class="section-label">Script Line Yahan Paste Karo</label>
+    <textarea id="scriptLine" rows="3" placeholder="जैसे: एक खाली बर्तन से दूसरों को पानी नहीं दे सकते..."></textarea>
+    <button id="generateBtn" onclick="generateKeywords()">🔍 Icon Keywords Generate Karo</button>
+    <p id="errorMsg">Kuch galat hua. Internet check karo aur dobara try karo.</p>
+  </div>
+  <div id="results">
+    <div class="ai-reason" id="aiReason"></div>
+    <div id="siteCards"></div>
+  </div>
+  <div id="historySection">
+    <div class="history-label" id="historyLabel"></div>
+    <div id="historyList"></div>
+  </div>
+  <div class="footer">Flaticon • Icons8 • Undraw — Free Icon Finder</div>
+  <script>
+    const SITES = [
+      { key: "flaticon_keyword", name: "Flaticon", emoji: "⭐", color: "#00b3ff", badge: "#00b3ff22", border: "#00b3ff44", free: "Free with attribution", getUrl: (kw) => `https://www.flaticon.com/search?word=${encodeURIComponent(kw)}&style_id=45` },
+      { key: "icons8_keyword", name: "Icons8", emoji: "🎨", color: "#22c55e", badge: "#22c55e22", border: "#22c55e44", free: "Free with attribution", getUrl: (kw) => `https://icons8.com/icons/set/${encodeURIComponent(kw)}` },
+      { key: "undraw_keyword", name: "Undraw", emoji: "🖼️", color: "#a78bfa", badge: "#a78bfa22", border: "#a78bfa44", free: "100% Free ✅", getUrl: (kw) => `https://undraw.co/illustrations/${encodeURIComponent(kw.replace(/ /g,"-"))}` }
+    ];
+    const SYSTEM_PROMPT = `You are a visual icon search expert for icon websites like Flaticon, Icons8, and Undraw. The user will give you a Hindi/Hinglish script line from a YouTube video. Your job is to analyze the EXACT visual meaning of that line and give: 1. Two specific search keywords for Flaticon and Icons8 (1-3 words each, concrete nouns/actions) 2. One keyword for Undraw (scene names like "meditation", "friendship", "children" etc) Rules: - All keywords in ENGLISH only - Flaticon/Icons8: specific objects e.g. "crying child", "broken heart", "alarm bell" - Undraw: scene-based e.g. "meditation", "friendship" - All 3 keywords meaningfully different Respond ONLY in this exact JSON format, no markdown: {"flaticon_keyword":"...","icons8_keyword":"...","undraw_keyword":"...","visual_reason":"one line Hinglish explanation"}`;
+    let history = [];
+    async function generateKeywords() {
+      const line = document.getElementById("scriptLine").value.trim();
+      if (!line) return;
+      const btn = document.getElementById("generateBtn");
+      const errMsg = document.getElementById("errorMsg");
+      const resultsDiv = document.getElementById("results");
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> AI keywords dhundh raha hai...';
+      errMsg.style.display = "none";
+      resultsDiv.style.display = "none";
+      try {
+        const res = await fetch("https://api.anthropic.com/v1/messages", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1000, system: SYSTEM_PROMPT, messages: [{ role: "user", content: line }] }) });
+        const data = await res.json();
+        const text = (data.content || []).map(b => b.text || "").join("");
+        const clean = text.replace(/```json|```/g, "").trim();
+        const parsed = JSON.parse(clean);
+        renderResults(parsed, line);
+        addToHistory(line, parsed);
+      } catch(e) {
+        errMsg.style.display = "block";
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = "🔍 Icon Keywords Generate Karo";
+      }
+    }
+    function renderResults(data, line) {
+      document.getElementById("aiReason").innerHTML = `💡 <strong>AI ne samjha:</strong> ${data.visual_reason}`;
+      const cardsDiv = document.getElementById("siteCards");
+      cardsDiv.innerHTML = "";
+      SITES.forEach(site => {
+        const kw = data[site.key];
+        const card = document.createElement("div");
+        card.className = "site-card";
+        card.style.border = `1.5px solid ${site.border}`;
+        card.innerHTML = `<div class="site-card-header"><span style="font-size:18px">${site.emoji}</span><span class="site-name" style="color:${site.color}">${site.name}</span><span class="site-free-tag" style="background:${site.badge};border:1px solid ${site.border};color:${site.color}">${site.free}</span></div><div class="kw-row"><span class="kw-box" style="border:1px solid ${site.border}">${kw}</span><button class="copy-btn" onclick="copyKw(this, '${kw.replace(/'/g,"\\'")}')">📋 Copy</button><a class="search-btn" href="${site.getUrl(kw)}" target="_blank" style="background:${site.badge};border:1px solid ${site.border};color:${site.color}">${site.name} pe Dhundho ↗</a></div>`;
+        cardsDiv.appendChild(card);
+      });
+      document.getElementById("results").style.display = "block";
+    }
+    function copyKw(btn, kw) {
+      navigator.clipboard.writeText(kw).then(() => { btn.textContent = "✓ Copied"; btn.classList.add("copied"); setTimeout(() => { btn.textContent = "📋 Copy"; btn.classList.remove("copied"); }, 1500); });
+    }
+    function addToHistory(line, data) {
+      history.unshift({ line, ...data, id: Date.now() });
+      if (history.length > 10) history = history.slice(0, 10);
+      renderHistory();
+    }
+    function renderHistory() {
+      const section = document.getElementById("historySection");
+      const list = document.getElementById("historyList");
+      const label = document.getElementById("historyLabel");
+      if (history.length === 0) { section.style.display = "none"; return; }
+      section.style.display = "block";
+      label.textContent = `📋 Pichli Searches (${history.length})`;
+      list.innerHTML = "";
+      history.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "history-item";
+        div.onclick = () => { document.getElementById("scriptLine").value = item.line; renderResults(item, item.line); window.scrollTo({ top: 0, behavior: "smooth" }); };
+        const shortLine = item.line.length > 80 ? item.line.slice(0, 80) + "..." : item.line;
+        div.innerHTML = `<div class="history-line">${shortLine}</div><div class="history-kws">${SITES.map(s => `<span class="history-kw" style="background:${s.badge};color:${s.color};border:1px solid ${s.border}">${s.emoji} ${item[s.key]}</span>`).join("")}</div>`;
+        list.appendChild(div);
+      });
+    }
+    document.addEventListener("DOMContentLoaded", () => { document.getElementById("scriptLine").addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); generateKeywords(); } }); });
+  </script>
+</body>
+</html>
